@@ -30,11 +30,19 @@ type AccountsS struct {
 	DB    Database `component:"db"`
 }
 
+// Database is an interface that will be injected into both services.  A mock implementation is provided for the tests.
 type Database interface {
 	UserByID(userID string) (*User, error)
 	UserByUsername(username string) (*User, error)
 	AccountByID(accountID string) (*Account, error)
 	AccountsByUserID(userID string) ([]*Account, error)
+}
+
+// Components is the struct used as a reference of things to inject
+type Components struct {
+	Users    *Users
+	Accounts Accounts
+	DB       Database
 }
 
 // TestConnect tests that the various links between each component are properly set up.
@@ -97,12 +105,6 @@ type Account struct {
 	UserID    string
 }
 
-type Components struct {
-	Users    *Users
-	Accounts Accounts
-	DB       Database
-}
-
 type MockDB struct{}
 
 var (
@@ -111,7 +113,6 @@ var (
 	_ Database      = MockDB{}
 )
 
-// TEST OBJECT IMPLEMENTATIONS BELOW
 const (
 	testUsername  = "the-username"
 	testUserID    = "the-user-id"
