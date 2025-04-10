@@ -17,8 +17,8 @@ type Initializable interface {
 // Connect will create a set of dependencies which can be injected by using the returned Injector.
 // Each field in the reference that is eligible to be injected will also have its own dependencies injected.
 // The reference interface should be a struct or pointer to a struct.
-func Connect(tag string, reference interface{}) (Injector, error) {
-	injector := injector{tag, reflect.Indirect(reflect.ValueOf(reference))}
+func Connect(reference interface{}) (Injector, error) {
+	injector := injector{"inject", reflect.Indirect(reflect.ValueOf(reference))}
 	return injector, injector.Inject(getFields(reference)...)
 }
 
@@ -142,6 +142,9 @@ func dereference(v reflect.Value) reflect.Value {
 	for {
 		kind := v.Type().Kind()
 		if kind == reflect.Interface || kind == reflect.Ptr {
+			if v.IsNil() {
+				return v
+			}
 			v = v.Elem()
 		} else {
 			return v
