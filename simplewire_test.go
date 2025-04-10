@@ -11,8 +11,8 @@ import (
 // This example shows how to use simplewire when the dest is a struct.
 // Components which have Users injected must use type *Users (as opposed to User)
 type Users struct {
-	Accounts    Accounts `component:"accounts"`
-	DB          Database `component:"db"`
+	Accounts    Accounts `inject:"accounts"`
+	DB          Database `inject:"db"`
 	initialized bool
 }
 
@@ -26,8 +26,8 @@ type Accounts interface {
 
 // AccountsS is a struct that implements Accounts.  It also has some dependencies which need to be injected.
 type AccountsS struct {
-	Users *Users   `component:"users"`
-	DB    Database `component:"db"`
+	Users *Users   `inject:"users"`
+	DB    Database `inject:"db"`
 }
 
 // Database is an interface that will be injected into both services.  A mock implementation is provided for the tests.
@@ -52,7 +52,7 @@ func TestConnect(t *testing.T) {
 		Accounts: &AccountsS{},
 		DB:       &MockDB{},
 	}
-	_, err := Connect("component", components)
+	_, err := Connect(components)
 	assert.NoError(t, err)
 
 	assert.True(t, components.Users.initialized, "components.Users should have had the Init function called")
@@ -72,14 +72,14 @@ func TestInject(t *testing.T) {
 	}
 
 	// Connect our components
-	injector, err := Connect("component", components)
+	injector, err := Connect(components)
 	assert.NoError(t, err)
 
 	type Thing struct {
 		// Users is a struct so we need to use a pointer
-		Users *Users `component:"users"`
+		Users *Users `inject:"users"`
 		// Accounts is an interface, so we should not use a pointer
-		Accounts Accounts `component:"accounts"`
+		Accounts Accounts `inject:"accounts"`
 	}
 
 	t1 := Thing{}

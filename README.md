@@ -15,7 +15,7 @@ As an example,
 ```go
 type Users struct {
   // Accounts needs to be injected into Users
-  Accounts    *Accounts `service:"accounts"`
+  Accounts    *Accounts `inject:"Accounts"`
 }
 
 func (u Users) GetBalance(userID string) int {
@@ -26,7 +26,7 @@ func (u Users) GetBalance(userID string) int {
 
 type Accounts struct {
   // Users needs to be injected into Accounts
-  Users    *Users `service:"users"`
+  Users    *Users `inject:"Users"`
 }
 
 func (a Accounts) GetOwner(accountID string) User {
@@ -52,7 +52,7 @@ func main() {
     Accounts: &Accounts{},
   }
 
-  injector, err := simplewire.Connect("service", services)
+  injector, err := simplewire.Connect(services)
   if err != nil {
     panic(err)
   }
